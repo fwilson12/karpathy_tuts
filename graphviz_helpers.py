@@ -1,4 +1,5 @@
 from graphviz import Digraph
+from Value import Value
 
 
 def _trace(root):
@@ -16,7 +17,7 @@ def _trace(root):
     build(root)
     return nodes, edges
 
-def draw_dot(root):
+def _draw_dot(root):
     dot = Digraph(format='svg', graph_attr={'rankdir': 'LR'})
 
     nodes, edges = _trace(root)
@@ -25,7 +26,7 @@ def draw_dot(root):
         uid = str(id(n))
 
         # init value node
-        dot.node(name=uid, label="{ %s | data %.4f}" % (n.label, n.data), shape="record")
+        dot.node(name=uid, label="{ %s | data %.4f | grad %.4f }" % (n.label, n.data, n.grad ), shape="record")
         if n.op:
             # init op node
             dot.node(name=uid + n.op, label=n.op)
@@ -38,4 +39,7 @@ def draw_dot(root):
         dot.edge(str(id(n1)), str(id(n2)) + n2.op)
 
     return dot
-    
+
+
+def render_graph(node: Value) -> None:
+    _draw_dot(node).render(f"graph_{node.label}")    
